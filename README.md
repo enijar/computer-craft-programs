@@ -4,6 +4,8 @@ Having fun with ComputerCraft (a MineCraft mod).
 
 A collection of programs for use in the MineCraft ComputerCraft mod.
 
+![Demo Screenshot](misc/demo.png)
+
 ### Getting Started
 
 ```shell

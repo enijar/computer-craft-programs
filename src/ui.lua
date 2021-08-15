@@ -59,7 +59,9 @@ function draw()
 
     exitButton(1, 1, 6, 3, colors.red)
 
-    utils.drawBox(width, height, 6, 3, colors.green)
+    utils.drawBox(width, height, math.floor(width / 2), math.floor(height / 2), colors.green)
+    monitor.setCursorPos(math.floor(width / 2) + 6, math.floor(height / 2) + 4)
+    print("Hi!")
 
     touchX = -1
     touchY = -1
