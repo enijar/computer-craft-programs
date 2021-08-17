@@ -57,6 +57,8 @@ function update()
   touchY = y
 end
 
+local score = 0
+
 function draw()
   if time - lastDrawTime < fps then
     time = time + 1
@@ -69,8 +71,8 @@ function draw()
 
   utils.clear(monitor)
 
-  exitButton(1, height - 5, 7, 2, colors.red)
-  rebootButton(1, height - 2, 7, 2, colors.orange)
+  exitButton(width - 7, height - 5, 7, 2, colors.red)
+  rebootButton(width - 7, height - 2, 7, 2, colors.orange)
 
   local cx = math.floor((width - 8) / 2)
   local cy = math.floor((height - 4) / 2)
@@ -79,8 +81,12 @@ function draw()
   local ball = utils.drawImage("ball.nfp", x, y, 9, 5)
 
   if (utils.hitTest(touchX, touchY, ball)) then
-    reboot = true
+    score = score + 1
   end
+
+  monitor.setCursorPos(2, height - 1)
+  --shell.se
+  print(utils.join("score: ${score}", { score = score }))
 
   touchX = -1
   touchY = -1
