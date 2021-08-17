@@ -1,22 +1,33 @@
 function download(url, file)
-    local content = http.get(url).readAll()
-    if not content then
-        error("Could not connect to website")
-    end
-    f = fs.open(file, "w")
-    f.write(content)
-    f.close()
+  local content = http.get(url).readAll()
+  if not content then
+    error("Could not connect to website")
+  end
+  f = fs.open(file, "w")
+  f.write(content)
+  f.close()
 end
 
 function exitButton(x, y, width, height, color)
-    local box = utils.drawBox(x, y, width, height, color)
+  local box = utils.drawBox(x, y, width, height, color)
 
-    monitor.setCursorPos(x + 1, math.ceil(height / 2))
-    print("Exit")
+  monitor.setCursorPos(x + 1, y + 1)
+  print("Exit")
 
-    if (utils.hitTest(touchX, touchY, box)) then
-        exit = true
-    end
+  if (utils.hitTest(touchX, touchY, box)) then
+    exit = true
+  end
+end
+
+function rebootButton(x, y, width, height, color)
+  local box = utils.drawBox(x, y, width, height, color)
+
+  monitor.setCursorPos(x + 1, y + 1)
+  print("Reboot")
+
+  if (utils.hitTest(touchX, touchY, box)) then
+    reboot = true
+  end
 end
 
 download("http://enijar.eu.ngrok.io/utils.lua", "utils")
@@ -24,7 +35,7 @@ download("http://enijar.eu.ngrok.io/utils.lua", "utils")
 utils = require("utils")
 
 function clean()
-    utils.delete("utils")
+  utils.delete("utils")
 end
 
 --connect to monitor
@@ -33,6 +44,7 @@ term.redirect(monitor)
 
 --globals
 exit = false
+reboot = false
 touchX = -1
 touchY = -1
 time = 0
@@ -40,41 +52,50 @@ lastDrawTime = 0
 fps = 1 / 12
 
 function update()
-    event, side, x, y = os.pullEvent("monitor_touch")
-    touchX = x
-    touchY = y
+  event, side, x, y = os.pullEvent("monitor_touch")
+  touchX = x
+  touchY = y
 end
 
 function draw()
-    if time - lastDrawTime < fps then
-        time = time + 1
-        sleep(fps)
-    else
-        lastDrawTime = time
-    end
+  if time - lastDrawTime < fps then
+    time = time + 1
+    sleep(fps)
+  else
+    lastDrawTime = time
+  end
 
-    local width, height = term.getSize()
+  local width, height = term.getSize()
 
-    utils.clear(monitor)
+  utils.clear(monitor)
 
-    exitButton(1, 1, 6, 3, colors.red)
+  exitButton(1, height - 5, 7, 2, colors.red)
+  rebootButton(1, height - 2, 7, 2, colors.orange)
 
-    utils.drawBox(width, height, math.floor(width / 2), math.floor(height / 2), colors.green)
-    monitor.setCursorPos(math.floor(width / 2) + 6, math.floor(height / 2) + 4)
-    print("Hi!")
 
-    touchX = -1
-    touchY = -1
+  local x = (1 + math.sin(time / 5) / 2) * ((width - 8) / 2);
+  local ball = utils.drawImage("ball.nfp", x, math.floor((height - 4) / 2), 9, 5)
+
+  if (utils.hitTest(touchX, touchY, ball)) then
+    reboot = true
+  end
+
+  touchX = -1
+  touchY = -1
 end
 
 while true do
-    parallel.waitForAny(update, draw)
+  parallel.waitForAny(update, draw)
 
-    if (exit) then
-        break
-    end
+  if (exit or reboot) then
+    break
+  end
 end
 
 utils.clear(monitor)
-
 clean()
+
+if (reboot) then
+  print("Rebooting...")
+  shell.run("disk/run.lua")
+end
