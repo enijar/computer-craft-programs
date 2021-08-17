@@ -72,9 +72,11 @@ function draw()
   exitButton(1, height - 5, 7, 2, colors.red)
   rebootButton(1, height - 2, 7, 2, colors.orange)
 
-
-  local x = (1 + math.sin(time / 5) / 2) * ((width - 8) / 2);
-  local ball = utils.drawImage("ball.nfp", x, math.floor((height - 4) / 2), 9, 5)
+  local cx = math.floor((width - 8) / 2)
+  local cy = math.floor((height - 4) / 2)
+  local x = (1 + math.sin(time / 5) / 2) * cx;
+  local y = (1 + math.cos(time / 5) / 2) * cy;
+  local ball = utils.drawImage("ball.nfp", x, y, 9, 5)
 
   if (utils.hitTest(touchX, touchY, ball)) then
     reboot = true
